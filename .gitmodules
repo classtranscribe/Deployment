@@ -1,0 +1,8 @@
+[submodule "WebAPI"]
+	path = WebAPI
+	url = https://github.com/classtranscribe/WebAPI.git
+	branch = master
+[submodule "FrontEnd"]
+	path = FrontEnd
+	url = https://github.com/classtranscribe/FrontEnd.git
+	branch = master
