@@ -1,0 +1,192 @@
+version: "3.4"
+
+services:
+
+  # webserver to handle all traffic. This can use let's encrypt to generate a SSL cert.
+  traefik:
+    image: traefik:latest
+    command:
+      - --loglevel=INFO
+      - --api
+      # Entrypoints
+      - --defaultentrypoints=https,http
+      - --entryPoints=Name:http Address::${TRAEFIK_HTTP_PORT:-8000} ${TRAEFIK_HTTP_REDIRECT:-""}
+      - --entryPoints=Name:https Address::${TRAEFIK_HTTPS_PORT:-8443} ${TRAEFIK_HTTPS_OPTIONS:-TLS}
+      # Configuration for acme (https://letsencrypt.org/)
+      - --acme=${TRAEFIK_ACME_ENABLE:-false}
+      #- --acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --acme.email=${TRAEFIK_ACME_EMAIL:-""}
+      - --acme.entrypoint=https
+      - --acme.onhostrule=true
+      - --acme.storage=/config/acme.json
+      - --acme.httpchallenge.entrypoint=http
+      - --acme.storage=/config/acme.json
+      - --acme.acmelogging=true
+      - --acme.domains=${TRAEFIK_ACME_HOST:-""}
+      # DOCKER
+      - --docker=true
+      - --docker.endpoint=unix:///var/run/docker.sock
+      - --docker.exposedbydefault=false
+      - --docker.watch=true
+    restart: unless-stopped
+    ports:
+      - "${TRAEFIK_HTTP_PORT-8000}:${TRAEFIK_HTTP_PORT:-8000}"
+      - "${TRAEFIK_HTTPS_PORT-8443}:${TRAEFIK_HTTPS_PORT:-8443}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.port=8080"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /traefik"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik:/config
+    container_name: "traefik"
+
+  # Allow to see all docker containers running, restart and see log files.
+  portainer:
+    image: portainer/portainer:latest
+    command:
+      - --admin-password=${PORTAINER_PASSWORD:-}
+      - --host=unix:///var/run/docker.sock
+    restart: unless-stopped
+    depends_on:
+      - traefik
+    ports:
+      - "9000:9000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=portainer"
+      - "traefik.port=9000"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /portainer"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    container_name: "portainer"
+
+  db:
+    image: crunchydata/crunchy-postgres:centos7-10.4-2.0.0
+    volumes:
+      - "pgvolume:/pgdata" 
+    env_file:
+      - ".env"
+    ports:
+      - "5432:5432"
+    container_name: "db"
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: "rabbitmq"
+    env_file:
+      - ".env"
+    ports:
+      - "15671-15672:15671-15672"
+      - "4369:4369"
+      - "25672:25672"
+      - "5671-5672:5671-5672"
+  
+  rpcserver:
+    image: ${DOCKER_REGISTRY-}rpcserver
+    build:
+      context: ./WebAPI
+      dockerfile: ./WebAPI/rpcserver.Dockerfile
+    env_file:
+      - ".env"
+    volumes:
+        - "data:/Data"
+        - type: bind
+          source: ./WebAPI/NodeRpcServer
+          target: /NodeRpcServer
+        - type: bind
+          source: ./WebAPI/ct.proto  
+          target: /NodeRpcServer/ct.proto
+        - /NodeRpcServer/node_modules
+    ports:
+      - "50052:50052"
+    container_name: "rpcserver"
+    command: sh -c "cd NodeRpcServer; npm install; npm rebuild; npm start"
+
+  nginx:
+    image: nginx:1.15-alpine
+    env_file:
+      .env
+    volumes:
+      - ./FrontEnd/nginx:/etc/nginx/conf.d
+      - ./FrontEnd/build:/build
+    depends_on:
+      - traefik
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=nginx"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+  
+  frontend:
+    image: node
+    volumes:
+      - ./FrontEnd:/frontend
+      - ./FrontEnd/reactbuildscript.sh:/reactbuildscript.sh
+    env_file:
+      .env
+    container_name: "frontend"
+    command: sh -c "chmod a+x reactbuildscript.sh; ./reactbuildscript.sh"
+
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: ./WebAPI
+      target: api_publish
+      dockerfile: ./ASP.Dockerfile
+    volumes:
+      - "data:/Data"
+      - type: bind
+        source: ./WebAPI/ClassTranscribeServer/launchscript.sh
+        target: /launchscript.sh
+    container_name: "api"
+    depends_on:
+      - db
+      - traefik
+    env_file:
+      - ".env"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=api"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
+
+  taskengine:
+    image: ${DOCKER_REGISTRY-}taskengine
+    build:
+      context: ./WebAPI
+      target: taskengine_publish
+      dockerfile: ./ASP.Dockerfile
+    volumes:
+      - "data:/Data"
+      - type: bind
+        source: ./WebAPI/TaskEngine/launchscript.sh
+        target: /launchscript.sh
+    container_name: "taskengine"
+    depends_on:
+      - db
+      - rabbitmq
+      - rpcserver
+    env_file:
+      - ".env"
+    command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
+
+# ----------------------------------------------------------------------
+# Volumes used by the PEcAn stack. These volumes are used to make sure
+# we have persistent data. You can use add the commented section to your
+# docker-compose.override.yml to have the docker volumes placed at a
+# specific location.
+# ----------------------------------------------------------------------
+volumes:
+  traefik:
+  portainer:
+  pgvolume:
+  data:
