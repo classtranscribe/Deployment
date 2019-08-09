@@ -52,8 +52,6 @@ services:
     restart: unless-stopped
     depends_on:
       - traefik
-    ports:
-      - "9000:9000"
     labels:
       - "traefik.enable=true"
       - "traefik.backend=portainer"
@@ -71,26 +69,51 @@ services:
       - "pgvolume:/pgdata" 
     env_file:
       - ".env"
-    ports:
-      - "5432:5432"
     container_name: "db"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+      - traefik
+    volumes:
+      - "pga4volume:/var/lib/pgadmin"
+    env_file:
+      - ".env"
+    ports:
+      - "5050:80"
+    container_name: "pgadmin"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=pgadmin"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip:/pgadmin"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   rabbitmq:
     image: rabbitmq:management
     container_name: "rabbitmq"
     env_file:
       - ".env"
-    ports:
-      - "15671-15672:15671-15672"
-      - "4369:4369"
-      - "25672:25672"
-      - "5671-5672:5671-5672"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management path_prefix "/rabbitmq"
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-guest}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=rabbitmq"
+      - "traefik.port=15672"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/rabbitmq"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
   rpcserver:
     image: ${DOCKER_REGISTRY-}rpcserver
     build:
       context: ./WebAPI
-      dockerfile: ./WebAPI/rpcserver.Dockerfile
+      dockerfile: ./rpcserver.Dockerfile
     env_file:
       - ".env"
     volumes:
@@ -99,7 +122,7 @@ services:
           source: ./WebAPI/NodeRpcServer
           target: /NodeRpcServer
         - type: bind
-          source: ./WebAPI/ct.proto  
+          source: ./WebAPI/ct.proto
           target: /NodeRpcServer/ct.proto
         - /NodeRpcServer/node_modules
     ports:
@@ -123,6 +146,7 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    container_name: "nginx"
   
   frontend:
     image: node
@@ -155,7 +179,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=api"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/,/Data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
 
@@ -189,4 +213,5 @@ volumes:
   traefik:
   portainer:
   pgvolume:
+  pga4volume:
   data:
