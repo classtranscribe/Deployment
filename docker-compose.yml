@@ -99,8 +99,9 @@ services:
     container_name: "rabbitmq"
     env_file:
       - ".env"
-    depends_on:
-      - traefik
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     restart: unless-stopped
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management path_prefix "/rabbitmq"
@@ -208,10 +209,7 @@ services:
     command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
 
 # ----------------------------------------------------------------------
-# Volumes used by the PEcAn stack. These volumes are used to make sure
-# we have persistent data. You can use add the commented section to your
-# docker-compose.override.yml to have the docker volumes placed at a
-# specific location.
+# Volumes used ClassTranscribe
 # ----------------------------------------------------------------------
 # if you change any of the volumes you will need the volumes header.
 volumes:
@@ -220,30 +218,30 @@ volumes:
   traefik:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/traefik
+      device: ${DATA_TRAEFIK:-~/docker_data/traefik}
       o: bind
   pgvolume:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/pgvolume
+      device: ${DATA_PGVOLUME:-~/docker_data/pgvolume}
       o: bind
   pga4volume:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/pga4volume
+      device: ${DATA_PGA4VOLUME:-~/docker_data/pga4volume}
       o: bind
   rabbitmq:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/rabbitmq
+      device: ${DATA_RABBITMQ:-~/docker_data/rabbitmq}
       o: bind
   portainer:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/portainer
+      device: ${DATA_PORTAINER:-~/docker_data/portainer}
       o: bind
   data:
     driver_opts:
       type: none
-      device: ${HOME}/docker_data/data
+      device: ${DATA_DATA:-~/docker_data/data}
       o: bind
