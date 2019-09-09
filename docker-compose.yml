@@ -168,7 +168,7 @@ services:
     build:
       context: ./WebAPI
       target: api_publish
-      dockerfile: ./ASP.Dockerfile
+      dockerfile: ./API.Dockerfile
     volumes:
       - "data:/data"
       - type: bind
@@ -193,7 +193,7 @@ services:
     build:
       context: ./WebAPI
       target: taskengine_publish
-      dockerfile: ./ASP.Dockerfile
+      dockerfile: ./TaskEngine.Dockerfile
     volumes:
       - "data:/data"
       - type: bind
