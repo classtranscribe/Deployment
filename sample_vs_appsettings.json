@@ -1,0 +1,19 @@
+{
+  // Rename to vs_appsettings.json and place in Deployment/WebAPI folder.
+  // For the empty fields copy the same value as in the .env file.
+  "POSTGRES_SERVER_NAME": "",
+  "POSTGRES_DB": "",
+  "POSTGRES_USER": "",
+  "POSTGRES_PASSWORD": "",
+  "ALLOWED_HOSTS": "*",
+  "JWT_KEY": "",
+  "JWT_ISSUER": "",
+  "JWT_EXPIRE_DAYS": "30",
+  "RabbitMQServer": "localhost",
+  "NODE_RPC_SERVER": "localhost:50052",
+  "AZURE_SUBSCRIPTION_KEYS": "",
+  "AUTH0_CLIENT_ID": "",
+  "AUTH0_DOMAIN": "",
+  "DATA_DIRECTORY": "",
+  "GOD_MODE_PASSWORD": ""
+}
