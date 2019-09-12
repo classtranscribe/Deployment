@@ -30,6 +30,7 @@ services:
       - --docker.endpoint=unix:///var/run/docker.sock
       - --docker.exposedbydefault=false
       - --docker.watch=true
+      # - --docker.domain=docker.localhost
     restart: unless-stopped
     ports:
       - "${TRAEFIK_HTTP_PORT-8000}:${TRAEFIK_HTTP_PORT:-8000}"
@@ -115,7 +116,7 @@ services:
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
   rpcserver:
-    image: ${DOCKER_REGISTRY-}rpcserver
+    image: classtranscribe/rpcserver:latest
     build:
       context: ./WebAPI
       dockerfile: ./rpcserver.Dockerfile
@@ -161,7 +162,7 @@ services:
     env_file:
       .env
     container_name: "frontend"
-    command: sh -c "chmod a+x reactbuildscript.sh; ./reactbuildscript.sh"
+    command: /bin/sh -c "cd frontend; yarn; yarn install; yarn run build"
 
   api:
     image: ${DOCKER_REGISTRY-}api
@@ -186,7 +187,7 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
+    command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/ClassTranscribeServer.dll"
 
   taskengine:
     image: ${DOCKER_REGISTRY-}taskengine
@@ -206,7 +207,7 @@ services:
       - rpcserver
     env_file:
       - ".env"
-    command: sh -c "chmod a+x launchscript.sh; ./launchscript.sh"
+    command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/TaskEngine.dll"
 
 # ----------------------------------------------------------------------
 # Volumes used ClassTranscribe
@@ -218,30 +219,30 @@ volumes:
   traefik:
     driver_opts:
       type: none
-      device: ${DATA_TRAEFIK:-~/docker_data/traefik}
+      device: ${DATA:-~/docker_data}/traefik
       o: bind
   pgvolume:
     driver_opts:
       type: none
-      device: ${DATA_PGVOLUME:-~/docker_data/pgvolume}
+      device: ${DATA:-~/docker_data}/pgvolume
       o: bind
   pga4volume:
     driver_opts:
       type: none
-      device: ${DATA_PGA4VOLUME:-~/docker_data/pga4volume}
+      device: ${DATA:-~/docker_data}/pga4volume
       o: bind
   rabbitmq:
     driver_opts:
       type: none
-      device: ${DATA_RABBITMQ:-~/docker_data/rabbitmq}
+      device: ${DATA:-~/docker_data}/rabbitmq
       o: bind
   portainer:
     driver_opts:
       type: none
-      device: ${DATA_PORTAINER:-~/docker_data/portainer}
+      device: ${DATA:-~/docker_data}/portainer
       o: bind
   data:
     driver_opts:
       type: none
-      device: ${DATA_DATA:-~/docker_data/data}
+      device: ${DATA:-~/docker_data}/data
       o: bind
