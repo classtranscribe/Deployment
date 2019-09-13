@@ -1,0 +1,7 @@
+version: "3.4"
+
+services:
+  frontend:
+    ports:
+      - "3000:3000"
+    command: /bin/sh -c "cd frontend; yarn; yarn install; yarn start"

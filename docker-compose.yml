@@ -23,8 +23,8 @@ services:
       - --acme.storage=/config/acme.json
       - --acme.acmelogging=true
       - --acme.domains=${TRAEFIK_ACME_HOST:-""}
-      - --acme.domains=${TRAEFIK_ACME_HOST2:-""}
-      - --acme.domains=${TRAEFIK_ACME_HOST3:-""}
+      # - --acme.domains=${TRAEFIK_ACME_HOST2:-""}
+      # - --acme.domains=${TRAEFIK_ACME_HOST3:-""}
       # DOCKER
       - --docker=true
       - --docker.endpoint=unix:///var/run/docker.sock
@@ -116,7 +116,7 @@ services:
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
   rpcserver:
-    image: classtranscribe/rpcserver:latest
+    image: ${DOCKER_REGISTRY-}rpcserver
     build:
       context: ./WebAPI
       dockerfile: ./rpcserver.Dockerfile
@@ -158,7 +158,6 @@ services:
     image: node
     volumes:
       - ./FrontEnd:/frontend
-      - ./FrontEnd/reactbuildscript.sh:/reactbuildscript.sh
     env_file:
       .env
     container_name: "frontend"
