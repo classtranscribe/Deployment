@@ -135,33 +135,15 @@ services:
       - "50052:50052"
     container_name: "rpcserver"
     command: sh -c "cd NodeRpcServer; npm install; npm rebuild; npm start"
-
-  nginx:
-    image: nginx:1.15-alpine
-    env_file:
-      .env
-    volumes:
-      - ./FrontEnd/nginx:/etc/nginx/conf.d
-      - ./FrontEnd/build:/build
-    depends_on:
-      - traefik
-      - api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=nginx"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    container_name: "nginx"
   
   frontend:
     image: node
     volumes:
       - ./FrontEnd:/frontend
+      - /frontend/node_modules
     env_file:
       .env
     container_name: "frontend"
-    command: /bin/sh -c "cd frontend; yarn; yarn install; yarn run build"
 
   api:
     image: ${DOCKER_REGISTRY-}api
@@ -216,32 +198,8 @@ volumes:
 
   # use a local subfolders in data folder to store the volumes.
   traefik:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/traefik
-      o: bind
   pgvolume:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/pgvolume
-      o: bind
   pga4volume:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/pga4volume
-      o: bind
   rabbitmq:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/rabbitmq
-      o: bind
   portainer:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/portainer
-      o: bind
   data:
-    driver_opts:
-      type: none
-      device: ${DATA:-~/docker_data}/data
-      o: bind
