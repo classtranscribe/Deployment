@@ -5,7 +5,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.backend=frontend"
-      - "traefik.port=80"
+      - "traefik.port=3000"
       - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     command: /bin/sh -c "cd frontend; yarn; yarn install; yarn start"
