@@ -17,7 +17,7 @@
 
 For a development build on a local machine,
 
-1. Obtain a `.env` file from an admin.
+1. Obtain a `.env` file from an admin and place it in `Deployment/`
 
 2. Build and run docker-compose
 
