@@ -85,14 +85,12 @@ services:
       - "pga4volume:/var/lib/pgadmin"
     env_file:
       - ".env"
-    ports:
-      - "5050:80"
     container_name: "pgadmin"
     labels:
       - "traefik.enable=true"
       - "traefik.backend=pgadmin"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip:/pgadmin"
+      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/pgadmin"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   rabbitmq:
