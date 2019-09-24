@@ -3,9 +3,10 @@
 ### Getting Started
 
 0. Install latest docker and docker-compose
+
    [Install Docker](https://www.docker.com/products/docker-desktop)
    
-   Windows and Mac Desktop builds of Docker already include docker-compose. You will need to start docker by opening the Docker app or restarting your machine.
+   Windows and Mac desktop builds already include docker-compose. You will need to start docker engine by opening the Docker app or restarting your machine.
 
 1. Clone the repository (with it's submodules)
 
