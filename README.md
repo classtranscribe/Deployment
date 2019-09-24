@@ -24,7 +24,7 @@
 
 
 
-For a development build on a local machine,
+### Development build on a local machine
 
 1. Obtain a `.env` file from an admin and place it in `Deployment/`
 
@@ -46,11 +46,21 @@ Creating api        ... done
 Creating taskengine ... done
 ````
 
-3. Open the web app at [localhost](http://localhost) and accept the insecure self-generated https certificate
+3. Open the web app at [localhost](https://localhost) and accept the insecure self-generated https certificate
+The web server will initially report a bad gateway while the container finishes building the ClassTranscribe container.
+
+To view the build of the ClassTranscribe container use
+docker-compose logs -f --tail="100" frontend
+and expect to see 'Starting the development server...' after successful building of the frontend
+
+### Web endpoints
+
+(https://localhost/traefik/) - Web routing to multiple containers
+(https://localhost/swag/) - List of ClassTranscribe API endpoints and verbs
+(https://localhost/portainer/) - Container administration and health status
 
 
-
-For a production build do the following,
+### Production build instructions
 
 1. Create directories required for docker volumes using the script  `create_directories.sh`
 
@@ -68,3 +78,6 @@ For a production build do the following,
 4. Build and run docker-compose
 
   `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d`
+  
+  See above notes for Web endpoints.
+  
