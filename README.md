@@ -3,6 +3,10 @@
 ### Getting Started
 
 0. Install latest docker and docker-compose
+   [Install Docker](https://www.docker.com/products/docker-desktop)
+   
+   Windows and Mac Desktop builds of Docker already include docker-compose. You will need to start docker by opening the Docker app or restarting your machine.
+
 1. Clone the repository (with it's submodules)
 
   `git clone --recurse-submodules https://github.com/classtranscribe/Deployment.git`
@@ -15,6 +19,10 @@
 
   `git submodule foreach git pull origin master`
 
+4. Following instructions below for either development build or production build.
+
+
+
 For a development build on a local machine,
 
 1. Obtain a `.env` file from an admin and place it in `Deployment/`
@@ -23,7 +31,9 @@ For a development build on a local machine,
 
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
   
-3. Run the app at [localhost](http://localhost)
+3. Open the web app at [localhost](http://localhost)
+
+
 
 For a production build do the following,
 
