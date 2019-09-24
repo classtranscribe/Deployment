@@ -31,8 +31,22 @@ For a development build on a local machine,
 2. Build and run docker-compose
 
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
-  
-3. Open the web app at [localhost](http://localhost)
+
+A successful build will take 10 minutes and return to your shell prompt. The last few lines will be similar to -
+
+````sh
+Creating rabbitmq  ... done
+Creating rpcserver ... done
+Creating frontend  ... done
+Creating traefik   ... done
+Creating db        ... done
+Creating pgadmin    ... done
+Creating portainer  ... done
+Creating api        ... done
+Creating taskengine ... done
+````
+
+3. Open the web app at [localhost](http://localhost) and accept the insecure self-generated https certificate
 
 
 
