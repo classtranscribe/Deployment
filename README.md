@@ -20,7 +20,7 @@
 
   `git submodule foreach git pull origin master`
 
-4. Following instructions below for either development build or production build.
+4. Then use the development build instructions or the production build instructions below -
 
 
 
