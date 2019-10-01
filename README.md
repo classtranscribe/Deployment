@@ -53,6 +53,8 @@ To view the build of the ClassTranscribe container use
 docker-compose logs -f --tail="100" frontend
 and expect to see 'Starting the development server...' after successful building of the frontend
 
+To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
+
 ### Web endpoints
 
 (https://localhost/traefik/) - Web routing to multiple containers
