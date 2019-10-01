@@ -50,7 +50,10 @@ Creating taskengine ... done
 The web server will initially report a bad gateway while the container finishes building the ClassTranscribe container.
 
 To view the build of the ClassTranscribe container use
+```sh
 docker-compose logs -f --tail="100" frontend
+```
+
 and expect to see 'Starting the development server...' after successful building of the frontend
 
 To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
