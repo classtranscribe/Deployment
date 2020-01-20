@@ -113,7 +113,7 @@ services:
       - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
-  rpcserver:
+  noderpcserver:
     image: ${DOCKER_REGISTRY-}rpcserver
     build:
       context: ./WebAPI
@@ -127,12 +127,32 @@ services:
           target: /NodeRpcServer
         - type: bind
           source: ./WebAPI/ct.proto
-          target: /NodeRpcServer/ct.proto
+          target: /ct.proto
         - /NodeRpcServer/node_modules
     ports:
       - "50052:50052"
-    container_name: "rpcserver"
-    command: sh -c "cd NodeRpcServer; npm install; npm rebuild; npm start"
+    container_name: "noderpcserver"
+    command: sh -c "cd /NodeRpcServer; npm install; npm rebuild; npm start"
+  
+  pythonrpcserver:
+    image: ${DOCKER_REGISTRY-}rpcserver
+    build:
+      context: ./WebAPI
+      dockerfile: ./rpcserver.Dockerfile
+    env_file:
+      - ".env"
+    volumes:
+        - "data:/data"
+        - type: bind
+          source: ./WebAPI/PythonRpcServer
+          target: /PythonRpcServer
+        - type: bind
+          source: ./WebAPI/ct.proto
+          target: /ct.proto
+    ports:
+      - "50051:50051"
+    container_name: "pythonrpcserver"
+    command: sh -c "cd /PythonRpcServer; python3 -m grpc_tools.protoc -I / --python_out=. --grpc_python_out=. /ct.proto; python3 -u server.py"
   
   frontend:
     image: node
@@ -183,7 +203,8 @@ services:
     depends_on:
       - db
       - rabbitmq
-      - rpcserver
+      - noderpcserver
+      - pythonrpcserver
     env_file:
       - ".env"
     command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/TaskEngine.dll"
