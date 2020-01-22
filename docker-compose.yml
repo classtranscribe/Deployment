@@ -152,7 +152,8 @@ services:
     ports:
       - "50051:50051"
     container_name: "pythonrpcserver"
-    command: sh -c "cd /PythonRpcServer; python3 -m grpc_tools.protoc -I / --python_out=. --grpc_python_out=. /ct.proto; python3 -u server.py"
+    command: sh -c "python3 -m grpc_tools.protoc -I . --python_out=/PythonRpcServer/ --grpc_python_out=/PythonRpcServer/ ct.proto; python3 -u PythonRpcServer/server.py"
+    #command: sh -c "tail -f /dev/null"
   
   frontend:
     image: node
