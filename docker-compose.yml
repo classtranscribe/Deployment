@@ -209,6 +209,14 @@ services:
     env_file:
       - ".env"
     command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/TaskEngine.dll"
+  
+  dem:
+    image: quaide/dem:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./dem_conf.yml
+        target: /app/conf.yml
 
 # ----------------------------------------------------------------------
 # Volumes used ClassTranscribe

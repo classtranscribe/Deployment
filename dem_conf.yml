@@ -1,0 +1,40 @@
+settings:
+    logging: info ## Log verbosity <debug, info (default), warn, error>
+    tags: ## List of tags you want to appear in notifications for identification purposes
+      - docker
+    exclusions: ## the name of any actors (containers, networks etc) you want to exclude from alerts
+      - test1
+  
+events: ## The Docker event types that you want to trigger alerts for
+    container: 
+        - health_status
+        - oom
+        - destroy
+        - create
+        - start
+        - stop
+    image: 
+        - delete
+    plugin:
+        - install
+        - remove
+    volume: 
+        - destroy
+        - create
+    network:
+        - destroy
+    daemon:
+        - reload
+    service:
+        - remove
+    node:
+        - remove
+    secret:
+        - remove
+    config:
+        - remove
+
+integrations: ## Available integrations  
+    slack:
+        enabled: True
+        url: https://hooks.slack.com/services/${DEM_SLACK_URL}
