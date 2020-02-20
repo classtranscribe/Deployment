@@ -16,7 +16,13 @@ services:
         source: ../data
         target: /data
   
-  rpcserver:
+  noderpcserver:
+    volumes:
+        - type: bind
+          source: ../data
+          target: /data
+  
+  pythonrpcserver:
     volumes:
         - type: bind
           source: ../data
