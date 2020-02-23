@@ -168,7 +168,7 @@ services:
     image: ${DOCKER_REGISTRY-}api
     build:
       context: ./WebAPI
-      target: api_publish
+      target: publish
       dockerfile: ./API.Dockerfile
     volumes:
       - "data:/data"
@@ -187,13 +187,12 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/ClassTranscribeServer.dll"
 
   taskengine:
     image: ${DOCKER_REGISTRY-}taskengine
     build:
       context: ./WebAPI
-      target: taskengine_publish
+      target: publish
       dockerfile: ./TaskEngine.Dockerfile
     volumes:
       - "data:/data"
@@ -208,7 +207,6 @@ services:
       - pythonrpcserver
     env_file:
       - ".env"
-    command: sh -c "dotnet ef -p /src/ClassTranscribeDatabase/ClassTranscribeDatabase.csproj database update; dotnet /app/TaskEngine.dll"
   
   dem:
     image: quaide/dem:latest
