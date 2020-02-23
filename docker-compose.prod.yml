@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   nginx:
-    image: frontend
+    image: classtranscribe/frontend:latest
     env_file:
       .env
     volumes:
