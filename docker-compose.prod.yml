@@ -14,7 +14,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=nginx"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /"
+      - "traefik.frontend.rule=PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     container_name: "nginx"
 

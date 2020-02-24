@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=traefik"
       - "traefik.port=8080"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /traefik"
+      - "traefik.frontend.rule=PathPrefixStrip: /traefik"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -50,7 +50,7 @@ services:
   portainer:
     image: portainer/portainer:latest
     command:
-      - --admin-password=${PORTAINER_PASSWORD:-}
+      - --admin-password=${PORTAINER_PASSWORD:- }
       - --host=unix:///var/run/docker.sock
     restart: unless-stopped
     depends_on:
@@ -59,7 +59,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=portainer"
       - "traefik.port=9000"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /portainer"
+      - "traefik.frontend.rule=PathPrefixStrip: /portainer"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -90,7 +90,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=pgadmin"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/pgadmin"
+      - "traefik.frontend.rule=PathPrefix:/pgadmin"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   rabbitmq:
@@ -110,7 +110,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=rabbitmq"
       - "traefik.port=15672"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/rabbitmq"
+      - "traefik.frontend.rule=PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
   noderpcserver:
@@ -133,9 +133,6 @@ services:
   
   pythonrpcserver:
     image: classtranscribe/rpcserver
-    build:
-      context: ./WebAPI
-      dockerfile: ./rpcserver.Dockerfile
     env_file:
       - ".env"
     volumes:
@@ -175,7 +172,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=api"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/,/data/,/swag"
+      - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   taskengine:
