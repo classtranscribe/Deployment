@@ -23,8 +23,8 @@ services:
       - --acme.storage=/config/acme.json
       - --acme.acmelogging=true
       - --acme.domains=${TRAEFIK_ACME_HOST:-""}
-      # - --acme.domains=${TRAEFIK_ACME_HOST2:-""}
-      # - --acme.domains=${TRAEFIK_ACME_HOST3:-""}
+      - --acme.domains=${TRAEFIK_ACME_HOST2:-""}
+      - --acme.domains=${TRAEFIK_ACME_HOST3:-""}
       # DOCKER
       - --docker=true
       - --docker.endpoint=unix:///var/run/docker.sock
@@ -39,8 +39,9 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=traefik"
       - "traefik.port=8080"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /traefik"
+      - "traefik.frontend.rule=PathPrefixStrip: /traefik"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+      # - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik:/config
@@ -50,7 +51,7 @@ services:
   portainer:
     image: portainer/portainer:latest
     command:
-      - --admin-password=${PORTAINER_PASSWORD:-}
+      - --admin-password=${PORTAINER_PASSWORD:- }
       - --host=unix:///var/run/docker.sock
     restart: unless-stopped
     depends_on:
@@ -59,7 +60,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=portainer"
       - "traefik.port=9000"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefixStrip: /portainer"
+      - "traefik.frontend.rule=PathPrefixStrip: /portainer"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -67,9 +68,9 @@ services:
     container_name: "portainer"
 
   db:
-    image: postgres:latest
+    image: postgres:11.7
     volumes:
-      - "pgvolume:/var/lib/postgresql/data" 
+      - "pgvolume:/var/lib/postgresql/data"
     ports:
       - "5432:5432"
     env_file:
@@ -77,7 +78,7 @@ services:
     container_name: "db"
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:4.11
     depends_on:
       - db
       - traefik
@@ -90,7 +91,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=pgadmin"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/pgadmin"
+      - "traefik.frontend.rule=PathPrefix:/pgadmin"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   rabbitmq:
@@ -98,9 +99,6 @@ services:
     container_name: "rabbitmq"
     env_file:
       - ".env"
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     restart: unless-stopped
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management path_prefix "/rabbitmq"
@@ -110,7 +108,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=rabbitmq"
       - "traefik.port=15672"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix:/rabbitmq"
+      - "traefik.frontend.rule=PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
   noderpcserver:
@@ -129,13 +127,10 @@ services:
     ports:
       - "50052:50052"
     container_name: "noderpcserver"
-    command: sh -c "cd /NodeRpcServer; npm install; npm rebuild; npm start"
+    command: sh -c "cd NodeRpcServer; npm install; npm rebuild; npm start"
   
   pythonrpcserver:
     image: classtranscribe/rpcserver
-    build:
-      context: ./WebAPI
-      dockerfile: ./rpcserver.Dockerfile
     env_file:
       - ".env"
     volumes:
@@ -166,7 +161,7 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=api"
       - "traefik.port=80"
-      - "traefik.frontend.rule=${TRAEFIK_FRONTEND_RULE:-}PathPrefix: /api/,/data/,/swag"
+      - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
 
   taskengine:
