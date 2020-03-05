@@ -1,22 +1,20 @@
 version: "3.4"
 
 services:
-  nginx:
+  frontend:
     image: classtranscribe/frontend:latest
     env_file:
       .env
-    volumes:
-      - ./FrontEnd/nginx:/etc/nginx/conf.d
     depends_on:
       - traefik
       - api
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=nginx"
+      - "traefik.backend=frontend"
       - "traefik.port=80"
       - "traefik.frontend.rule=PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    container_name: "nginx"
+    container_name: "frontend"
 
 # ----------------------------------------------------------------------
 # Volumes used ClassTranscribe
