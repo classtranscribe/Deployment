@@ -148,7 +148,7 @@ services:
     #command: sh -c "tail -f /dev/null"
 
   api:
-    image: classtranscribe/api
+    image: classtranscribe/api 
     volumes:
       - "data:/data"
     container_name: "api"
