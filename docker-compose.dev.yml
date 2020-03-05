@@ -23,30 +23,18 @@ services:
       context: ./WebAPI
       target: publish
       dockerfile: ./API.Dockerfile
-    volumes:
-      - type: bind
-        source: ../data
-        target: /data
   
   noderpcserver:
     image: rpcserver
     build:
       context: ./WebAPI
       dockerfile: ./rpcserver.Dockerfile
-    volumes:
-        - type: bind
-          source: ../data
-          target: /data
   
   pythonrpcserver:
     image: rpcserver
     build:
       context: ./WebAPI
       dockerfile: ./rpcserver.Dockerfile
-    volumes:
-        - type: bind
-          source: ../data
-          target: /data
   
   taskengine:
     image: taskengine
@@ -54,7 +42,3 @@ services:
       context: ./WebAPI
       target: publish
       dockerfile: ./TaskEngine.Dockerfile
-    volumes:
-      - type: bind
-        source: ../data
-        target: /data

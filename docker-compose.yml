@@ -44,7 +44,7 @@ services:
       # - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik:/config
+      - ${DATA:-~/docker_data}/traefik:/config
     container_name: "traefik"
 
   # Allow to see all docker containers running, restart and see log files.
@@ -64,13 +64,13 @@ services:
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer:/data
+      - ${DATA:-~/docker_data}/portainer:/data
     container_name: "portainer"
 
   db:
     image: postgres:11.7
     volumes:
-      - "pgvolume:/var/lib/postgresql/data"
+      - "${DATA:-~/docker_data}/pgvolume:/var/lib/postgresql/data"
     ports:
       - "5432:5432"
     env_file:
@@ -83,7 +83,7 @@ services:
       - db
       - traefik
     volumes:
-      - "pga4volume:/var/lib/pgadmin"
+      - "${DATA:-~/docker_data}/pga4volume:/var/lib/pgadmin"
     env_file:
       - ".env"
     container_name: "pgadmin"
@@ -116,7 +116,7 @@ services:
     env_file:
       - ".env"
     volumes:
-        - "data:/data"
+        - "${DATA:-~/docker_data}/data:/data"
         - type: bind
           source: ./WebAPI/NodeRpcServer
           target: /NodeRpcServer
@@ -134,7 +134,7 @@ services:
     env_file:
       - ".env"
     volumes:
-        - "data:/data"
+        - "${DATA:-~/docker_data}/data:/data"
         - type: bind
           source: ./WebAPI/PythonRpcServer
           target: /PythonRpcServer
@@ -150,7 +150,7 @@ services:
   api:
     image: classtranscribe/api
     volumes:
-      - "data:/data"
+      - "${DATA:-~/docker_data}/data:/data"
     container_name: "api"
     depends_on:
       - db
@@ -167,7 +167,7 @@ services:
   taskengine:
     image: classtranscribe/taskengine
     volumes:
-      - "data:/data"
+      - "${DATA:-~/docker_data}/data:/data"
     container_name: "taskengine"
     depends_on:
       - db
@@ -184,17 +184,18 @@ services:
       - type: bind
         source: ./dem_conf.yml
         target: /app/conf.yml
-
-# ----------------------------------------------------------------------
-# Volumes used ClassTranscribe
-# ----------------------------------------------------------------------
-# if you change any of the volumes you will need the volumes header.
-volumes:
-
-  # use a local subfolders in data folder to store the volumes.
-  traefik:
-  pgvolume:
-  pga4volume:
-  rabbitmq:
-  portainer:
-  data:
+  
+  frontend:
+    image: classtranscribe/frontend:latest
+    env_file:
+      .env
+    depends_on:
+      - traefik
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=frontend"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix: /"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    container_name: "frontend"
