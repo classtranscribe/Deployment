@@ -68,7 +68,7 @@ services:
     container_name: "portainer"
 
   db:
-    image: postgres:latest
+    image: postgres:11.7
     volumes:
       - "pgvolume:/var/lib/postgresql/data"
     ports:
@@ -78,7 +78,7 @@ services:
     container_name: "db"
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:4.11
     depends_on:
       - db
       - traefik
