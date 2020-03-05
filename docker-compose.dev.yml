@@ -1,7 +1,14 @@
 version: "3.4"
 
-services:  
+services:
   frontend:
+    image: node
+    volumes:
+      - ./FrontEnd:/frontend
+      - /frontend/node_modules
+    env_file:
+      .env
+    container_name: "frontend"
     labels:
       - "traefik.enable=true"
       - "traefik.backend=frontend"

@@ -151,15 +151,6 @@ services:
     container_name: "pythonrpcserver"
     command: sh -c "python3 -m grpc_tools.protoc -I . --python_out=/PythonRpcServer/ --grpc_python_out=/PythonRpcServer/ ct.proto; python3 -u PythonRpcServer/server.py"
     #command: sh -c "tail -f /dev/null"
-  
-  frontend:
-    image: node
-    volumes:
-      - ./FrontEnd:/frontend
-      - /frontend/node_modules
-    env_file:
-      .env
-    container_name: "frontend"
 
   api:
     image: classtranscribe/api
