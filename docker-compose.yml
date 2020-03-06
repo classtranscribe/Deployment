@@ -75,6 +75,9 @@ services:
       - "5432:5432"
     env_file:
       - ".env"
+    environment:
+      - POSTGRES_USER=${ADMIN_USER_ID:-guest}
+      - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-guest}
     container_name: "db"
 
   pgadmin:
@@ -86,6 +89,9 @@ services:
       - "${DATA:-~/docker_data}/pga4volume:/var/lib/pgadmin"
     env_file:
       - ".env"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${ADMIN_USER_ID:-guest}
+      - PGADMIN_DEFAULT_PASSWORD=${ADMIN_PASSWORD:-guest}
     container_name: "pgadmin"
     labels:
       - "traefik.enable=true"
@@ -102,8 +108,8 @@ services:
     restart: unless-stopped
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management path_prefix "/rabbitmq"
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-guest}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-guest}
+      - RABBITMQ_DEFAULT_USER=${ADMIN_USER_ID:-guest}
+      - RABBITMQ_DEFAULT_PASS=${ADMIN_PASSWORD:-guest}
     labels:
       - "traefik.enable=true"
       - "traefik.backend=rabbitmq"
