@@ -67,7 +67,7 @@ To start development see the [Development-GettingStarted](./Development-GettingS
 
 ### Production build instructions
 
-1. Create directories required for docker volumes using the script  `create_directories.sh`
+1. Create directories required for storing all the data using the script `create_directories.sh`
 
   Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
   
@@ -75,14 +75,13 @@ To start development see the [Development-GettingStarted](./Development-GettingS
   
 2. Make a copy of the `sample-environment-variable-file.env` as `.env`
 
-
   `cp sample-environment-variable-file.env .env`
   
 3. Update all the required environment variables in the .env file, contact admin if clarification required.
 
 4. Build and run docker-compose
 
-  `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d`
+  `docker-compose up --build -d`
   
   See above notes for Web endpoints.
   
