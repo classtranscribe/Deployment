@@ -22,9 +22,9 @@ services:
       - --acme.httpchallenge.entrypoint=http
       - --acme.storage=/config/acme.json
       - --acme.acmelogging=true
-      - --acme.domains=${TRAEFIK_ACME_HOST:-""}
-      - --acme.domains=${TRAEFIK_ACME_HOST2:-""}
-      - --acme.domains=${TRAEFIK_ACME_HOST3:-""}
+      - --acme.domains=${HOST_NAME:-""}
+      - --acme.domains=${TRAEFIK_ADDITIONAL_HOST1:-""}
+      - --acme.domains=${TRAEFIK_ADDITIONAL_HOST2:-""}
       # DOCKER
       - --docker=true
       - --docker.endpoint=unix:///var/run/docker.sock
