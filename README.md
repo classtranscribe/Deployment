@@ -79,8 +79,6 @@ To start development see the [Development-GettingStarted](./Development-GettingS
   
 2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
 
-3. To enable slack monitoring messages add webhook url to `dem_conf.yml`
-
 3. Build and run docker-compose
 
   `docker-compose up --build -d`
