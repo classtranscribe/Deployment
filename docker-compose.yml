@@ -15,7 +15,7 @@ services:
       # Configuration for acme (https://letsencrypt.org/)
       - --acme=${TRAEFIK_ACME_ENABLE:-false}
       #- --acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - --acme.email=${TRAEFIK_ACME_EMAIL:-""}
+      - --acme.email=${ADMIN_USER_ID:-""}
       - --acme.entrypoint=https
       - --acme.onhostrule=true
       - --acme.storage=/config/acme.json
