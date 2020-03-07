@@ -20,9 +20,13 @@
 
   `git submodule foreach git pull origin master`
 
-4. Then use the development build instructions or the production build instructions below -
+4. Create directories required for storing all the data using the script `create_directories.sh`
 
+  Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
+  
+  Eg. `./create_directories.sh /home/username/docker_data`
 
+5. Then use the development build instructions or the production build instructions below -
 
 ### Development build on a local machine
 
@@ -60,26 +64,24 @@ To start development see the [Development-GettingStarted](./Development-GettingS
 
 ### Web endpoints
 
+(The trailing slashes are important)
 (https://localhost/traefik/) - Web routing to multiple containers
 (https://localhost/swag/) - List of ClassTranscribe API endpoints and verbs
 (https://localhost/portainer/) - Container administration and health status
-
+(https://localhost/pgadmin/) - Web GUI tool to manage the database
+(https://localhost/rabbitmq/) - RabbitMQ dashboard
 
 ### Production build instructions
 
-1. Create directories required for storing all the data using the script `create_directories.sh`
-
-  Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
-  
-  Eg. `./create_directories.sh /home/username/docker_data`
-  
-2. Make a copy of the `sample-environment-variable-file.env` as `.env`
+1. Make a copy of the `sample-environment-variable-file.env` as `.env`
 
   `cp sample-environment-variable-file.env .env`
   
-3. Update all the required environment variables in the .env file, contact admin if clarification required.
+2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
 
-4. Build and run docker-compose
+3. To enable slack monitoring messages add webhook url to `dem_conf.yml`
+
+3. Build and run docker-compose
 
   `docker-compose up --build -d`
   

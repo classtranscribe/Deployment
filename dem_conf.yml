@@ -43,4 +43,4 @@ events: ## The Docker event types that you want to trigger alerts for
 integrations: ## Available integrations  
     slack:
         enabled: True
-        url: https://hooks.slack.com/services/${DEM_SLACK_URL}
+        url: <REPLACE WITH SLACK WEBHOOK URL>
