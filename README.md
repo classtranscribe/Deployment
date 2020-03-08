@@ -28,6 +28,20 @@
 
 5. Then use the development build instructions or the production build instructions below -
 
+### Production build instructions
+
+1. Make a copy of the `sample-environment-variable-file.env` as `.env`
+
+  `cp sample-environment-variable-file.env .env`
+  
+2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
+
+3. Build and run docker-compose
+
+  `docker-compose up --build -d`
+  
+  See notes below for Web endpoints.
+  
 ### Development build on a local machine
 
 1. Obtain a `.env` file from an admin and place it in `Deployment/`
@@ -71,17 +85,27 @@ To start development see the [Development-GettingStarted](./Development-GettingS
 (https://localhost/pgadmin/) - Web GUI tool to manage the database
 (https://localhost/rabbitmq/) - RabbitMQ dashboard
 
-### Production build instructions
+### Frontend only Local Development
 
-1. Make a copy of the `sample-environment-variable-file.env` as `.env`
+In such a development environment only the frontend code runs locally, while all the backend is run on a VM,
+To run this, 
+1. Make a copy of the `sample-environment-variable-file.local.frontend.env` as `.env`
 
-  `cp sample-environment-variable-file.env .env`
+  `cp sample-environment-variable-file.local.frontend.env .env`
   
 2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
 
-3. Build and run docker-compose
+3. Build and run docker-compose only for frontend
 
-  `docker-compose up --build -d`
-  
-  See above notes for Web endpoints.
-  
+  `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d frontend`
+
+### Local Development on a Windows Machine
+
+As mounting docker volumes is not the easiest thing on a windows machines some extra care has to be taken. An additional docker-compose file - [docker-compose.windows-dev.yml](docker-compose.windows-dev.yml) is used to allow for such incompatibilities.
+
+To use this file,
+If a typical docker-compose command is,
+`docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
+
+It becomes,
+`docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.windows-dev.yml up --build -d`
