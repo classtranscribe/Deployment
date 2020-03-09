@@ -160,6 +160,7 @@ services:
     container_name: "api"
     depends_on:
       - db
+      - rabbitmq
       - traefik
     env_file:
       - ".env"
@@ -169,6 +170,7 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/ClassTranscribeServer.dll"
 
   taskengine:
     image: classtranscribe/taskengine
@@ -182,6 +184,7 @@ services:
       - pythonrpcserver
     env_file:
       - ".env"
+    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/TaskEngine.dll"
   
   dem:
     image: quaide/dem:latest
