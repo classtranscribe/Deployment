@@ -1,46 +1,30 @@
-# Deployment
+# Initial setup
 
-### Getting Started
+ ### Install git and Docker
 
-0. Install latest docker and docker-compose
+Install git and the latest docker (which already contains docker-compose)
 
+   [Install git for OSX](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+   
    [Install Docker](https://www.docker.com/products/docker-desktop)
    
-   Windows and Mac desktop builds already include docker-compose. You will need to start docker engine by opening the Docker app or restarting your machine.
+   Start the Docker engine by either opening the Docker app or restarting your machine.
+      
+### Clone the ClassTranscribe Repository
 
-1. Clone the repository (with it's submodules)
+Clone the repository (with it's submodules)
 
   `git clone --recurse-submodules https://github.com/classtranscribe/Deployment.git`
   
-2. Enter repository.
+Enter repository.
 
   `cd Deployment/`
   
-3. Update submodules.
+Update submodules.
 
   `git submodule foreach git pull origin master`
 
-4. Create directories required for storing all the data using the script `create_directories.sh`
-
-  Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
-  
-  Eg. `./create_directories.sh /home/username/docker_data`
-
-5. Then use the development build instructions or the production build instructions below -
-
-### Production build instructions
-
-1. Make a copy of the `sample-environment-variable-file.env` as `.env`
-
-  `cp sample-environment-variable-file.env .env`
-  
-2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
-
-3. Build and run docker-compose
-
-  `docker-compose up --build -d`
-  
-  See notes below for Web endpoints.
+* Use the development build instructions or the production build instructions below.
   
 ### Development build on a local machine
 
@@ -79,11 +63,11 @@ To start development see the [Development-GettingStarted](./Development-GettingS
 ### Web endpoints
 
 (The trailing slashes are important)
-(https://localhost/traefik/) - Web routing to multiple containers
-(https://localhost/swag/) - List of ClassTranscribe API endpoints and verbs
-(https://localhost/portainer/) - Container administration and health status
-(https://localhost/pgadmin/) - Web GUI tool to manage the database
-(https://localhost/rabbitmq/) - RabbitMQ dashboard
+* (https://localhost/traefik/) - Web routing to multiple containers
+* (https://localhost/swag/) - List of ClassTranscribe API endpoints and verbs
+* (https://localhost/portainer/) - Container administration and health status
+* (https://localhost/pgadmin/) - Web GUI tool to manage the database
+* (https://localhost/rabbitmq/) - RabbitMQ dashboard
 
 ### Frontend only Local Development
 
@@ -109,3 +93,25 @@ If a typical docker-compose command is,
 
 It becomes,
 `docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.windows-dev.yml up --build -d`
+
+### Production build instructions
+
+* Create directories required for storing all the data using the script `create_directories.sh`
+
+  Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
+  
+  Eg. `./create_directories.sh /home/username/docker_data`
+
+
+1. Make a copy of the `sample-environment-variable-file.env` as `.env`
+
+  `cp sample-environment-variable-file.env .env`
+  
+2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
+
+3. Build and run docker-compose
+
+  `docker-compose up --build -d`
+  
+  See notes above for Web endpoints.
+  
