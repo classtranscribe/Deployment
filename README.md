@@ -128,12 +128,13 @@ Next Steps. To start development see the [Development-GettingStarted](./Developm
 * (https://localhost/rabbitmq/) - RabbitMQ dashboard
 
 ### Production build instructions
+* We assume you have already created a virtual machine, with TCP ports 80 and 443 publicly available, created a local user (e.g. 'classtranscribeuser') and associated home directory.
 
-* Choose a root directory to hold ClassTranscribe data (files, database). Create the sub0-directories to store the data using the script `create_directories.sh`
+* Create a root directory to hold ClassTranscribe data (files, database). Initialize the sub-directories to store the data using the script `create_directories.sh`
 
   Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
   
-  Eg. `./create_directories.sh /home/username/docker_data`
+  Eg. `./create_directories.sh /home/classtranscribeuser/docker_data`
 
 
 1. Make a copy of the `sample-environment-variable-file.env` as `.env` inside the `Deployment` directory
