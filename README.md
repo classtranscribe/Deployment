@@ -26,19 +26,23 @@ Update submodules.
 
 * Use the development build instructions or the production build instructions below.
   
-### Development build on a local machine
+### Full FrontEnd and Backend Development on a local machine
 
-1. Obtain a `.env` file from an admin and place it in `Deployment/`
+1. The environment file `.env` in `Deployment/` includes API keys for external services and passwords for backend components. To create the file either
+i) Copy an existing `.env` file from another developer. Or,
+ii) Start with one of the empty template env files (e.g. [sample-environment-variable-file.en](https://github.com/classtranscribe/Deployment/blob/master/sample-environment-variable-file.env) or
+[sample-environment-variable-file.local.frontend.env](https://github.com/classtranscribe/Deployment/blob/master/sample-environment-variable-file.local.frontend.env) to use a remote existing backend server
 
-2. Build and run docker-compose
+2. Build and run docker-compose to build all items
 
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
 
-A successful build will take 10 minutes and return to your shell prompt. The last few lines will be similar to -
+A successful build of all docker components will take 10 minutes and return to your shell prompt. The last few lines will be similar to -
 
 ````sh
 Creating rabbitmq  ... done
-Creating rpcserver ... done
+Creating noderpcserver ... done
+Creating pythonrpcserver ... done
 Creating frontend  ... done
 Creating traefik   ... done
 Creating db        ... done
@@ -48,10 +52,24 @@ Creating api        ... done
 Creating taskengine ... done
 ````
 
+
+RabbitMQ (rabbitmq) is a third-party message queue service used to schedule backend tasks
+The noderpcserver and pythonrpcserver are used with the message queue to receive jobs 
+The '''traefik''' container is a reverse proxy. All web requests are initially handled by traefik and, based on the URL, passed to the appropriate container for procesing
+'''db''' is the SQL postgres database.
+'''pgadmin''' is a web-based admin console for the database.
+'''portainer''' is a web-based tool to manage and monitor docker containers.
+
+The the three containers that include ClassTranscribe code are 
+frontend
+api
+taskengine
+
+
 3. Open the web app at [localhost](https://localhost) and accept the insecure self-generated https certificate
 The web server will initially report a bad gateway while the container finishes building the ClassTranscribe container.
 
-To view the build of the ClassTranscribe container use
+To view the build status of the ClassTranscribe container use
 ```sh
 docker-compose logs -f --tail="100" frontend
 ```
