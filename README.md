@@ -5,13 +5,14 @@
 Install git and the latest docker (which already contains docker-compose)
 
    [Install git for OSX](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+   
    [Install Docker](https://www.docker.com/products/docker-desktop)
    
-   Start docker engine by opening the Docker app or restarting your machine.
+   Start the Docker engine by either opening the Docker app or restarting your machine.
       
 ### Clone the ClassTranscribe Repository
 
-Clone the repository (with it's submodules(
+Clone the repository (with it's submodules)
 
   `git clone --recurse-submodules https://github.com/classtranscribe/Deployment.git`
   
@@ -23,7 +24,7 @@ Update submodules.
 
   `git submodule foreach git pull origin master`
 
-* Then use the development build instructions or the production build instructions below -
+* Use the development build instructions or the production build instructions below.
   
 ### Development build on a local machine
 
