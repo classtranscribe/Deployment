@@ -4,7 +4,7 @@
 
 Install git and the latest docker (which already contains docker-compose)
 
-   [Install git for OSX](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+   [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
    
    [Install Docker](https://www.docker.com/products/docker-desktop)
    
@@ -28,13 +28,13 @@ Update submodules.
   
 ### Option 1- Frontend only Local Development
 
-In such a development environment only the frontend code runs locally, while all the backend is run on a remote VM,
-To run this, 
+This option is designed for frontend web developers. The frontend code runs locally, while all the backend is run on a remote Virtual Machine.
+
 1. Make a copy of the `sample-environment-variable-file.local.frontend.env` as `.env`
 
   `cp sample-environment-variable-file.local.frontend.env .env`
   
-2. Update the required environment variables in the .env file, (instructions are provided in the sample file).
+2. Update the required environment variables in the .env file, (instructions are provided in the sample file) to connect to your development server.
 
 3. Build and run docker-compose only for frontend
 
@@ -50,7 +50,7 @@ To run this,
 
 ### Windows 10 docker-compose technical note
 
-Tech note: Mounting docker volumes is prone to errors on a windows machines. An additional docker-compose file, [docker-compose.windows-dev.yml](docker-compose.windows-dev.yml) is used to overcome some current incompatibilities of the Windows Subsystem for Linux environment. We expect this additional file will not be required when using WSL2 (this documentation will be updated in the future). To use this file add ```-f docker-compose.windows-dev.yml``` For example, if a typical docker-compose command is,
+Tech note: Mounting docker volumes is prone to errors on a Windows machines. An additional docker-compose file, [docker-compose.windows-dev.yml](docker-compose.windows-dev.yml) is used to overcome some current incompatibilities of the Windows Subsystem for Linux environment. We expect this additional file will not be required when using WSL2 and this documentation will be updated in the future. To use this workaround append ```-f docker-compose.windows-dev.yml``` to the list of compose files For example, if a typical docker-compose command is,
 `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
 
 The command becomes,
@@ -62,9 +62,9 @@ We recommend you first complete the frontend instructions above.
 
 1. The environment file `.env` in `Deployment/` includes API keys for external services and passwords for backend components. To create the file either
 i) Copy an existing `.env` file from another developer. Or,
-ii) Start with the empty template env files (e.g. [sample-environment-variable-file.env](https://github.com/classtranscribe/Deployment/blob/master/sample-environment-variable-file.env) 
+ii) Copy and edit the empty template file [sample-environment-variable-file.env](https://github.com/classtranscribe/Deployment/blob/master/sample-environment-variable-file.env) and save it as `.env`
 
-2. Build and run docker-compose to initially build and run all items
+2. Build and run docker-compose to initially build and start all containers
 
   Mac OSX and Linux:
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d`
@@ -93,7 +93,7 @@ ClassTranscribe code is comprised of three containers -
 ````sh
 frontend (the react code for the browser)
 api (Provides Web-based REST API)
-taskengine (Backend non-interactive batch tasks)
+taskengine (ClassTranscribe's backend non-interactive batch tasks)
 ````
 
 The third-party docker containers are 
@@ -109,14 +109,14 @@ portainer, a web-based tool to manage and monitor docker containers.
 3. Open the web app at [localhost](https://localhost) and accept the insecure self-generated https certificate
 The web server will initially report a bad gateway while the container finishes building the ClassTranscribe container.
 
-For the impatient - To view the build status of the ClassTranscribe container use the tail option on the frontend logs
+For the impatient:  To view the build status of the ClassTranscribe container use the tail option on the frontend logs
 ```sh
 docker-compose logs -f --tail="100" frontend
 ```
 
-and expect to see 'Starting the development server...' after successful building of the frontend
+and expect to see 'Starting the development server...' after successful build of the frontend
 
-To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
+Next Steps. To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
 
 ### Web endpoints
 
@@ -129,22 +129,32 @@ To start development see the [Development-GettingStarted](./Development-GettingS
 
 ### Production build instructions
 
-* Create directories required for storing all the data using the script `create_directories.sh`
+* Choose a root directory to hold ClassTranscribe data (files, database). Create the sub0-directories to store the data using the script `create_directories.sh`
 
   Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
   
   Eg. `./create_directories.sh /home/username/docker_data`
 
 
-1. Make a copy of the `sample-environment-variable-file.env` as `.env`
+1. Make a copy of the `sample-environment-variable-file.env` as `.env` inside the `Deployment` directory
 
   `cp sample-environment-variable-file.env .env`
   
 2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
 
-3. Build and run docker-compose
+3. To pull the latest build and run
 
-  `docker-compose up --build -d`
+ `docker-compose up --pull --build -d`
+ 
+ or to build and run the local version
+ `docker-compose up  --build -d`
   
-  See notes above for Web endpoints.
-  
+  See above notes for Web endpoints.
+
+4. An example cron entry is shown below to automatically restart the service when the server is rebooted.
+
+```sh
+@reboot sleep 20 && /usr/local/bin/docker-compose -f /home/classtranscribeuser/Deployment/docker-compose.yml up --build -d
+```
+
+Note: These intructions will be updated in the future to use a pre-built docker image.
