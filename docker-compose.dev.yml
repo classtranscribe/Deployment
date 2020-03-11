@@ -42,3 +42,15 @@ services:
       context: ./WebAPI
       target: publish
       dockerfile: ./TaskEngine.Dockerfile
+  
+  rabbitmq:
+    ports:
+      - "5672:5672"
+  
+  noderpcserver:
+    ports:
+      - "50052:50052"
+
+  pythonrpcserver:
+    ports:
+      - "50051:50051"
