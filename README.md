@@ -128,34 +128,32 @@ Next Steps. To start development see the [Development-GettingStarted](./Developm
 * (https://localhost/rabbitmq/) - RabbitMQ dashboard
 
 ### Production build instructions
-* We assume you have already created a virtual machine, with TCP ports 80 and 443 publicly available, created a local user (e.g. 'classtranscribeuser') and associated home directory.
+1. We assume you have already created a virtual machine, with TCP ports 80 and 443 publicly available, created a local user (e.g. 'classtranscribeuser') and associated home directory.
 
-* Create a root directory to hold ClassTranscribe data (files, database). Initialize the sub-directories to store the data using the script `create_directories.sh`
-
-  Usage `./create_directories.sh <absolute_path_to_an_empty_directory>`
+2. Create a root directory to hold ClassTranscribe data (files, database). Initialize the sub-directories to store the data using the script `create_directories.sh`
   
-  Eg. `./create_directories.sh /home/classtranscribeuser/docker_data`
+  For example, `./create_directories.sh /home/classtranscribeuser/docker_data`
 
-
-1. Make a copy of the `sample-environment-variable-file.env` as `.env` inside the `Deployment` directory
+3. Make a copy of the `sample-environment-variable-file.env` as `.env` inside the `Deployment` directory
 
   `cp sample-environment-variable-file.env .env`
   
-2. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
+4. Update all the required environment variables in the .env file, (instructions are provided in the sample file), contact admin if clarification required.
 
-3. To pull the latest build and run
+5. To pull the latest build and run ClassTranscribe
 
  `docker-compose up --pull --build -d`
  
- or to build and run the local version
- `docker-compose up  --build -d`
-  
-  See above notes for Web endpoints.
+ or to build and run the current local version
 
-4. An example cron entry is shown below to automatically restart the service when the server is rebooted.
+`docker-compose up  --build -d`
+
+For initial testing of the production server, please see the web endpoints listed above. For security `TRAEFIK_IPFILTER` can be used to ensure that all services apart from the frontend are only reachable by a limited set of IP addresses.
+By default `TRAEFIK_IPFILTER` is configured to be `127.0.0.1`
+
+
+6. An example cron entry is shown below to automatically restart the service when the server is rebooted.
 
 ```sh
 @reboot sleep 20 && /usr/local/bin/docker-compose -f /home/classtranscribeuser/Deployment/docker-compose.yml up --build -d
 ```
-
-Note: These intructions will be updated in the future to use a pre-built docker image.
