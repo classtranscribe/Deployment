@@ -208,12 +208,3 @@ services:
       - "traefik.frontend.rule=PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     container_name: "frontend"
-  
-  sample_env_generator:
-    image: sample_env_generator
-    build:
-      context: .
-      dockerfile: ./ENV_GENERATOR.Dockerfile
-    volumes:
-      - ".:/curr_dir"
-    command: "bash -c /curr_dir/env_generator.sh"
