@@ -26,6 +26,14 @@ ms-vscode-remote.remote-ssh-edit" are also recommended.
 * Before making modifications, create a branch e.g. myname-2020-01-explore and send code review or pull requests to merge in master
 * The WebAPI provides a pure REST API. Based on the .env settings frontend react development can therefore send API requests to the dev server, localhost or in theory but not recommended, production
 
+## Versioning
+
+* The main server at classtranscribe.illinois.edu uses the head commit of the master branch all subprojects
+* The commit hashes stored in the Deployment/ are ignoed
+* The development server is updated 3am
+* The production server is restarted at 3am
+
+
 ## Known gotchas (Windows)
 
 * If docker builds fail during `apt update` with a complaint that updates are in the future, the docker container  time is out of sync. Fix: Restart docker.
