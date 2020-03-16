@@ -48,6 +48,8 @@ This option is designed for frontend web developers. The frontend code runs loca
 
   http://localhost/
 
+5. To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
+
 ### Windows 10 docker-compose technical note
 
 Tech note: Mounting docker volumes is prone to errors on a Windows machines. An additional docker-compose file, [docker-compose.windows-dev.yml](docker-compose.windows-dev.yml) is used to overcome some current incompatibilities of the Windows Subsystem for Linux environment. We expect this additional file will not be required when using WSL2 and this documentation will be updated in the future. To use this workaround append ```-f docker-compose.windows-dev.yml``` to the list of compose files For example, if a typical docker-compose command is,
