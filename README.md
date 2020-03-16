@@ -44,9 +44,11 @@ This option is designed for frontend web developers. The frontend code runs loca
   _Windows 10:_
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.windows-dev.yml up --build -d frontend`
   
-  You can also use the bat file (which first stops the frontend and then restarts it using the above line)-
+  You can also use the bat file (windows)or shell file (OSX). These stop the frontend and then restarts it using the above line
   
   [frontend.bat](./frontend.bat)
+  . [frontend.sh](./frontend.sh)
+  
   
 
 4. Use a browser to open the home page. Note the first time you open this page your browser will ask you if the self-signed https certificate can be trusted (add it as an exception)
