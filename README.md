@@ -38,15 +38,19 @@ This option is designed for frontend web developers. The frontend code runs loca
 
 3. Build and run docker-compose only for frontend
 
-  Mac OSX and Linux:
+  _Mac OSX and Linux:_
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d frontend`
   
-  Windows 10:
+  _Windows 10:_
   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.windows-dev.yml up --build -d frontend`
+  
+  You can also use the bat file (which first stops the frontend and then restarts it using the above line)-
+  `frontend.bat`
+  
 
-4. Use a browser to open the home page
+4. Use a browser to open the home page. Note the first time you open this page your browser will ask you if the self-signed https certificate can be trusted (add it as an exception)
 
-  http://localhost/
+  https://localhost/
 
 5. To start development see the [Development-GettingStarted](./Development-GettingStarted.md) instructions.
 
