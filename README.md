@@ -9,18 +9,18 @@ Install git and the latest docker (which already contains docker-compose)
    [Install Docker](https://www.docker.com/products/docker-desktop)
    
    Start the Docker engine by either opening the Docker app or restarting your machine.
+   
+   You will also need an editing environment. These instructions assume you have [VS Code](https://code.visualstudio.com/) installed.
       
 ### Clone the ClassTranscribe Repository
 
-Clone the repository (with it's submodules)
+Clone the repository (with it's submodules). If using VS Code, open a shell then type
 
   `git clone --recurse-submodules https://github.com/classtranscribe/Deployment.git`
   
-Enter repository.
+Enter the repository and update the submodules.
 
   `cd Deployment/`
-  
-Update submodules.
 
   `git submodule foreach git pull origin master`
 
