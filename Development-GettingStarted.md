@@ -15,8 +15,10 @@ ms-vscode-remote.remote-ssh-edit" are also recommended.
 
 ## Recommended documentation for frontend developers
 
-* The frontend libraries are listed in [FrontEnd/package.json](https://github.com/classtranscribe/FrontEnd/blob/master/package.json)
-* We are using react boostrap items (https://react-bootstrap.github.io/).
+The frontend libraries are listed in [FrontEnd/package.json](https://github.com/classtranscribe/FrontEnd/blob/master/package.json). We are using
+* [react boostrap items](https://react-bootstrap.github.io/).
+* [semantic-ui](https://react.semantic-ui.com/)
+* [react-redux](https://react-redux.js.org/)
 
 ## Recommended documentation for backend developers
 
