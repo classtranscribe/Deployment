@@ -13,16 +13,22 @@ We use slack class-transcribe.illinois.edu
 * To develop and debug remote: The Microsoft Extensions "Remote - SSH" and "Remote - SSH: Editing Configuration Files
 ms-vscode-remote.remote-ssh-edit" are also recommended.
 
-## Recommended documentation developers
+## Recommended documentation for frontend developers
 
-* We are using react boostrap items (https://react-bootstrap.github.io/).
+The frontend libraries are listed in [FrontEnd/package.json](https://github.com/classtranscribe/FrontEnd/blob/master/package.json). We are using
+* [pico-ui]()
+* [semantic-ui](https://react.semantic-ui.com/)
+* [react-redux](https://react-redux.js.org/)
+
+## Recommended documentation for backend developers
+
 * [Dockerfile](https://docs.docker.com/engine/reference/builder/) [Compose file](https://docs.docker.com/compose/compose-file/)
 * The Web API is implemented using (https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-3.0&tabs=visual-studio)
 * Data is stored in a SQL database, postgreSQL. (https://www.postgresql.org/docs/current/tutorial-sql.html)
 
 ## Development cycle and practices
 
-* We generally use WebAPI project to track bugs and todos
+* We use the WebAPI project to track bugs and to dos.
 * Before making modifications, create a branch e.g. myname-2020-01-explore and send code review or pull requests to merge in master
 * The WebAPI provides a pure REST API. Based on the .env settings frontend react development can therefore send API requests to the dev server, localhost or in theory but not recommended, production
 
