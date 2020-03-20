@@ -1,0 +1,16 @@
+version: "3.4"
+
+services:
+    frontend:
+        image: classtranscribe/frontend:staging
+    taskengine:
+        image: classtranscribe/taskengine:staging
+  
+    api:
+        image: classtranscribe/api:staging
+  
+    noderpcserver:
+        image: classtranscribe/rpcserver:staging
+
+    pythonrpcserver:
+        image: classtranscribe/rpcserver:staging
