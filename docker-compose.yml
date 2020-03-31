@@ -200,7 +200,7 @@ services:
       .env
     depends_on:
       - traefik
-    #  - api
+      #- api
     labels:
       - "traefik.enable=true"
       - "traefik.backend=frontend"
