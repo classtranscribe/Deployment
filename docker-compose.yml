@@ -154,7 +154,6 @@ services:
     depends_on:
       - db
       - rabbitmq
-      - noderpcserver
       - pythonrpcserver
     env_file:
       - ".env"

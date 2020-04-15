@@ -42,10 +42,6 @@ services:
     ports:
       - "5672:5672"
   
-  noderpcserver:
-    ports:
-      - "50052:50052"
-
   pythonrpcserver:
     ports:
       - "50051:50051"
