@@ -8,9 +8,12 @@ services:
   
     api:
         image: classtranscribe/api:staging
+    
+    rabbitmq:
+        ports:
+            - "5672:5672"
   
-    noderpcserver:
-        image: classtranscribe/rpcserver:staging
-
     pythonrpcserver:
-        image: classtranscribe/rpcserver:staging
+        image: classtranscribe/pythonrpcserver:staging
+        ports:
+            - "50051:50051"
