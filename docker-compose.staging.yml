@@ -9,8 +9,5 @@ services:
     api:
         image: classtranscribe/api:staging
   
-    noderpcserver:
-        image: classtranscribe/rpcserver:staging
-
     pythonrpcserver:
-        image: classtranscribe/rpcserver:staging
+        image: classtranscribe/pythonrpcserver:staging

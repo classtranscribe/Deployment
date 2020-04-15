@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   frontend:
-    image: node
+    image: node:lts
     volumes:
       - ./FrontEnd:/frontend
       - /frontend/node_modules
@@ -24,17 +24,12 @@ services:
       target: publish
       dockerfile: ./API.Dockerfile
   
-  noderpcserver:
-    image: rpcserver
-    build:
-      context: ./WebAPI
-      dockerfile: ./rpcserver.Dockerfile
-  
   pythonrpcserver:
-    image: rpcserver
+    image: pythonrpcserver
     build:
       context: ./WebAPI
-      dockerfile: ./rpcserver.Dockerfile
+        dockerfile: ./pythonrpcserver.Dockerfile
+      
   
   taskengine:
     image: taskengine

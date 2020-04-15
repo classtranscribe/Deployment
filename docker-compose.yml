@@ -117,41 +117,15 @@ services:
       - "traefik.frontend.rule=PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
   
-  noderpcserver:
-    image: classtranscribe/rpcserver
-    env_file:
-      - ".env"
-    volumes:
-        - "${DATA:-~/docker_data}/data:/data"
-        - type: bind
-          source: ./WebAPI/NodeRpcServer
-          target: /NodeRpcServer
-        - type: bind
-          source: ./WebAPI/ct.proto
-          target: /ct.proto
-        - /NodeRpcServer/node_modules
-    ports:
-      - "50052:50052"
-    container_name: "noderpcserver"
-    command: sh -c "cd NodeRpcServer; npm install; npm rebuild; npm start"
-  
   pythonrpcserver:
-    image: classtranscribe/rpcserver
+    image: classtranscribe/pythonrpcserver:latest
     env_file:
       - ".env"
     volumes:
         - "${DATA:-~/docker_data}/data:/data"
-        - type: bind
-          source: ./WebAPI/PythonRpcServer
-          target: /PythonRpcServer
-        - type: bind
-          source: ./WebAPI/ct.proto
-          target: /ct.proto
     ports:
       - "50051:50051"
     container_name: "pythonrpcserver"
-    command: sh -c "python3 -m grpc_tools.protoc -I . --python_out=/PythonRpcServer/ --grpc_python_out=/PythonRpcServer/ ct.proto; python3 -u PythonRpcServer/server.py"
-    #command: sh -c "tail -f /dev/null"
   
   api:
     image: classtranscribe/api
