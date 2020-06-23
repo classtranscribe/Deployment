@@ -23,25 +23,22 @@ services:
       context: ./WebAPI
       target: publish
       dockerfile: ./API.Dockerfile
-  
   pythonrpcserver:
     image: pythonrpcserver
     build:
       context: ./WebAPI
-        dockerfile: ./pythonrpcserver.Dockerfile
-      
-  
+      dockerfile: ./pythonrpcserver.Dockerfile
+    volumes:
+      - "${DATA:-~/docker_data}/data:/data"
   taskengine:
     image: taskengine
     build:
       context: ./WebAPI
       target: publish
-      dockerfile: ./TaskEngine.Dockerfile
-  
+      dockerfile: ./TaskEngine.Dockerfile  
   rabbitmq:
     ports:
       - "5672:5672"
-  
   pythonrpcserver:
     ports:
       - "50051:50051"
