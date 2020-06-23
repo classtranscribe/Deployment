@@ -119,16 +119,16 @@ services:
   
   pythonrpcserver:
     image: classtranscribe/pythonrpcserver:latest
+    container_name: "pythonrpcserver"
     env_file:
       - ".env"
     volumes:
         - "${DATA:-~/docker_data}/data:/data"
     ports:
       - "50051:50051"
-    container_name: "pythonrpcserver"
   
   api:
-    image: classtranscribe/api
+    image: classtranscribe/api:latest
     volumes:
       - "${DATA:-~/docker_data}/data:/data"
     container_name: "api"
@@ -147,7 +147,7 @@ services:
     command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/ClassTranscribeServer.dll"
 
   taskengine:
-    image: classtranscribe/taskengine
+    image: classtranscribe/taskengine:latest
     volumes:
       - "${DATA:-~/docker_data}/data:/data"
     container_name: "taskengine"
