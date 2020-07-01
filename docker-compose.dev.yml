@@ -3,6 +3,9 @@ version: "3.4"
 services:
   frontend:
     image: node:lts
+    build: 
+      context: ./FrontEnd
+      dockerfile: ./Dockerfile
     volumes:
       - ./FrontEnd:/frontend
       - /frontend/node_modules
