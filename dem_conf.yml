@@ -7,7 +7,6 @@ settings:
         - taskengine
         - traefik
         - db
-        - noderpcserver
         - pythonrpcserver
         - rabbitmq
   
