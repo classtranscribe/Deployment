@@ -42,6 +42,11 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip: /traefik"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
       # - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DATA:-~/docker_data}/traefik:/config
@@ -62,6 +67,11 @@ services:
       - "traefik.port=9000"
       - "traefik.frontend.rule=PathPrefixStrip: /portainer"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA:-~/docker_data}/portainer:/data
@@ -75,6 +85,11 @@ services:
       - "5432:5432"
     env_file:
       - ".env"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
     environment:
       - POSTGRES_USER=${ADMIN_USER_ID:-guest}
       - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-guest}
@@ -99,6 +114,11 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=PathPrefix:/pgadmin"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
 
   rabbitmq:
     image: rabbitmq:management
@@ -116,6 +136,11 @@ services:
       - "traefik.port=15672"
       - "traefik.frontend.rule=PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
   
   pythonrpcserver:
     image: classtranscribe/pythonrpcserver:latest
@@ -126,6 +151,11 @@ services:
         - "${DATA:-~/docker_data}/data:/data"
     ports:
       - "50051:50051"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
   
   api:
     image: classtranscribe/api:latest
@@ -145,6 +175,11 @@ services:
       - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/ClassTranscribeServer.dll"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
 
   taskengine:
     image: classtranscribe/taskengine:latest
@@ -158,6 +193,11 @@ services:
     env_file:
       - ".env"
     command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/TaskEngine.dll"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
   
   dem:
     image: quaide/dem:latest
@@ -166,6 +206,11 @@ services:
       - type: bind
         source: ./dem_conf.yml
         target: /app/conf.yml
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
   
   frontend:
     image: classtranscribe/frontend:latest
@@ -181,3 +226,9 @@ services:
       - "traefik.frontend.rule=PathPrefix: /"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
     container_name: "frontend"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 10
+        max-size: 100m
+
