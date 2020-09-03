@@ -45,7 +45,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -70,7 +70,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -88,7 +88,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
     environment:
       - POSTGRES_USER=${ADMIN_USER_ID:-guest}
@@ -117,7 +117,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
 
   rabbitmq:
@@ -139,7 +139,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
   
   pythonrpcserver:
@@ -154,7 +154,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
   
   api:
@@ -178,7 +178,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
 
   taskengine:
@@ -196,7 +196,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
   
   dem:
@@ -209,7 +209,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
   
   frontend:
@@ -229,6 +229,6 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-file: 10
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
         max-size: 100m
 
