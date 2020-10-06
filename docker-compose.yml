@@ -206,6 +206,3 @@ services:
       - "traefik.port=5601"
       - "traefik.frontend.rule=PathPrefix: /kibana/"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    
-volumes:
-  elasticsearch-data:
