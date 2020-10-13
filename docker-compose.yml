@@ -80,26 +80,6 @@ services:
       - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-guest}
     container_name: "db"
 
-  pgadmin:
-    image: dpage/pgadmin4:4.11
-    depends_on:
-      - db
-      - traefik
-    volumes:
-      - "${DATA:-~/docker_data}/pga4volume:/var/lib/pgadmin"
-    env_file:
-      - ".env"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${ADMIN_USER_ID:-guest}
-      - PGADMIN_DEFAULT_PASSWORD=${ADMIN_PASSWORD:-guest}
-    container_name: "pgadmin"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=pgadmin"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=PathPrefix:/pgadmin"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-
   rabbitmq:
     image: rabbitmq:management
     container_name: "rabbitmq"
@@ -192,17 +172,3 @@ services:
       - xpack.watcher.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
-  
-  kibana:
-    container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.6.2
-    depends_on:
-      - elasticsearch
-    environment:
-      - SERVER_BASEPATH=/kibana/
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=frontend"
-      - "traefik.port=5601"
-      - "traefik.frontend.rule=PathPrefix: /kibana/"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
