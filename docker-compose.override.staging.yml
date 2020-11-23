@@ -1,0 +1,152 @@
+version: "3.4"
+
+services:
+  # ----------------------------------------------------------------------
+  # INGRESS CONTAINERS
+  # single container that controls all incoming traffic.
+  # ----------------------------------------------------------------------
+
+  traefik:
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  # ----------------------------------------------------------------------
+  # CLASSTRANSCRIBE
+  # core containers created for and by classtranscribe project
+  # ----------------------------------------------------------------------
+
+  api:
+    image: classtranscribe/api:staging
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  frontend:
+    image: classtranscribe/frontend:staging
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  taskengine:
+    image: classtranscribe/taskengine:staging
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  pythonrpcserver:
+    image: classtranscribe/pythonrpcserver:staging
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  # ----------------------------------------------------------------------
+  # SUPPORT CONTAINERS
+  # containers required by classtranscribe
+  # ----------------------------------------------------------------------
+
+  db: # Default is 100 connections 128MB shared (25-40% of RAM is typical on a VM dedicated to just DB)
+    command: postgres -N 70 --shared_buffers=512MB
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  elasticsearch:
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  rabbitmq:
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  # ----------------------------------------------------------------------
+  # DEBUG CONTAINERS
+  # containers helpful to debug, but not needed to run classtranscribe
+  # ----------------------------------------------------------------------
+  dem:
+    image: quaide/dem:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./dem_conf.yml
+        target: /app/conf.yml
+    logging:
+      driver: "json-file"
+      options:
+        #  max-file: 10 # Prevents Win10 Docker from starting container!
+        max-size: 100m
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  # Simple database frontend
+  pgadmin:
+    container_name: "pgadmin"
+    image: dpage/pgadmin4:4.11
+    depends_on:
+      - db
+      - traefik
+    restart: unless-stopped
+    volumes:
+      - "${DATA:-~/docker_data}/pga4volume:/var/lib/pgadmin"
+    env_file:
+      - ".env"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${ADMIN_USER_ID:-guest}
+      - PGADMIN_DEFAULT_PASSWORD=${ADMIN_PASSWORD:-guest}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=pgadmin"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix:/pgadmin"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"
+
+  # Allow to see all docker containers running, restart and see log files.
+  portainer:
+    container_name: "portainer"
+    image: portainer/portainer:latest
+    command:
+      - --admin-password=${PORTAINER_PASSWORD:- }
+      - --host=unix:///var/run/docker.sock
+    depends_on:
+      - traefik
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA:-~/docker_data}/portainer:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=portainer"
+      - "traefik.port=9000"
+      - "traefik.frontend.rule=PathPrefixStrip: /portainer"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "100m"

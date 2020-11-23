@@ -1,9 +1,14 @@
 version: "3.4"
 
 services:
+  # ----------------------------------------------------------------------
+  # INGRESS CONTAINERS
+  # single container that controls all incoming traffic.
+  # ----------------------------------------------------------------------
 
   # webserver to handle all traffic. This can use let's encrypt to generate a SSL cert.
   traefik:
+    container_name: "traefik"
     image: traefik:v1.7
     command:
       - --loglevel=INFO
@@ -32,6 +37,9 @@ services:
       - --docker.watch=true
       # - --docker.domain=docker.localhost
     restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DATA:-~/docker_data}/traefik:/config
     ports:
       - "${TRAEFIK_HTTP_PORT-8000}:${TRAEFIK_HTTP_PORT:-8000}"
       - "${TRAEFIK_HTTPS_PORT-8443}:${TRAEFIK_HTTPS_PORT:-8443}"
@@ -42,93 +50,95 @@ services:
       - "traefik.frontend.rule=PathPrefixStrip: /traefik"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
       # - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${DATA:-~/docker_data}/traefik:/config
-    container_name: "traefik"
 
-  # Allow to see all docker containers running, restart and see log files.
-  portainer:
-    image: portainer/portainer:latest
-    command:
-      - --admin-password=${PORTAINER_PASSWORD:- }
-      - --host=unix:///var/run/docker.sock
-    restart: unless-stopped
+  # ----------------------------------------------------------------------
+  # CLASSTRANSCRIBE
+  # core containers created for and by classtranscribe project
+  # ----------------------------------------------------------------------
+
+  api:
+    container_name: "api"
+    image: classtranscribe/api:latest
+    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/ClassTranscribeServer.dll"
     depends_on:
+      - db
+      - rabbitmq
       - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=portainer"
-      - "traefik.port=9000"
-      - "traefik.frontend.rule=PathPrefixStrip: /portainer"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
+    restart: unless-stopped
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${DATA:-~/docker_data}/portainer:/data
-    container_name: "portainer"
-
-  db:
-    image: postgres:11.7
-    volumes:
-      - "${DATA:-~/docker_data}/pgvolume:/var/lib/postgresql/data"
-    #ports:
-    #  - "5432:5432"
+      - "${DATA:-~/docker_data}/data:/data"
     env_file:
       - ".env"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=api"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+
+  frontend:
+    container_name: "frontend"
+    image: classtranscribe/frontend:latest
+    depends_on:
+      - traefik
+    restart: unless-stopped
+    env_file:
+      .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=frontend"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=PathPrefix: /"
+      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
+
+  pythonrpcserver:
+    container_name: "pythonrpcserver"
+    image: classtranscribe/pythonrpcserver:latest
+    restart: unless-stopped
+    volumes:
+        - "${DATA:-~/docker_data}/data:/data"
+    ports:
+      - "50051:50051"
+    env_file:
+      - ".env"
+
+  taskengine:
+    container_name: "taskengine"
+    image: classtranscribe/taskengine:latest
+    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/TaskEngine.dll"
+    depends_on:
+      - db
+      - rabbitmq
+      - pythonrpcserver
+    restart: unless-stopped
+    volumes:
+      - "${DATA:-~/docker_data}/data:/data"
+    env_file:
+      - ".env"
+
+  # ----------------------------------------------------------------------
+  # SUPPORT CONTAINERS
+  # containers required by classtranscribe
+  # ----------------------------------------------------------------------
+
+  db:
+    container_name: "db"
+    image: postgres:11.7
+    restart: unless-stopped
+    volumes:
+      - "${DATA:-~/docker_data}/pgvolume:/var/lib/postgresql/data"
+    env_file:
+      - ".env"
     environment:
       - POSTGRES_USER=${ADMIN_USER_ID:-guest}
       - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-guest}
-    container_name: "db"
 
-<<<<<<< HEAD
-  pgadmin:
-    image: dpage/pgadmin4:4.11
-    depends_on:
-      - db
-      - traefik
-    volumes:
-      - "${DATA:-~/docker_data}/pga4volume:/var/lib/pgadmin"
-    env_file:
-      - ".env"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${ADMIN_USER_ID:-guest}
-      - PGADMIN_DEFAULT_PASSWORD=${ADMIN_PASSWORD:-guest}
-    container_name: "pgadmin"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=pgadmin"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=PathPrefix:/pgadmin"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-
-=======
->>>>>>> origin/elastic_search_dev
   rabbitmq:
-    image: rabbitmq:management
     container_name: "rabbitmq"
+    image: rabbitmq:management
+    restart: unless-stopped
     env_file:
       - ".env"
-    restart: unless-stopped
     environment:
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management path_prefix "/rabbitmq"
       - RABBITMQ_DEFAULT_USER=${ADMIN_USER_ID:-guest}
@@ -139,111 +149,11 @@ services:
       - "traefik.port=15672"
       - "traefik.frontend.rule=PathPrefix:/rabbitmq"
       - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
   
-  pythonrpcserver:
-    image: classtranscribe/pythonrpcserver:latest
-    container_name: "pythonrpcserver"
-    env_file:
-      - ".env"
-    volumes:
-        - "${DATA:-~/docker_data}/data:/data"
-    ports:
-      - "50051:50051"
-<<<<<<< HEAD
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-=======
->>>>>>> origin/elastic_search_dev
-  
-  api:
-    image: classtranscribe/api:latest
-    volumes:
-      - "${DATA:-~/docker_data}/data:/data"
-    container_name: "api"
-    depends_on:
-      - db
-      - rabbitmq
-      - traefik
-    env_file:
-      - ".env"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=api"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=PathPrefix: /api/,/data/,/swag"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/ClassTranscribeServer.dll"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-
-  taskengine:
-    image: classtranscribe/taskengine:latest
-    volumes:
-      - "${DATA:-~/docker_data}/data:/data"
-    container_name: "taskengine"
-    depends_on:
-      - db
-      - rabbitmq
-      - pythonrpcserver
-    env_file:
-      - ".env"
-    command: "/wait-for rabbitmq:5672 --timeout=50 -- dotnet /app/TaskEngine.dll"
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-  
-  dem:
-    image: quaide/dem:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - type: bind
-        source: ./dem_conf.yml
-        target: /app/conf.yml
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-  
-  frontend:
-    image: classtranscribe/frontend:latest
-    env_file:
-      .env
-    depends_on:
-      - traefik
-      #- api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=frontend"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=PathPrefix: /"
-      - "traefik.website.frontend.whiteList.sourceRange=${TRAEFIK_IPFILTER:-172.16.0.0/12}"
-    container_name: "frontend"
-<<<<<<< HEAD
-    logging:
-      driver: "json-file"
-      options:
-        #  max-file: 10 # Prevents Win10 Docker from starting container!
-        max-size: 100m
-
-=======
-
   elasticsearch:
-    container_name: elasticsearch
+    container_name: "elasticsearch"
     image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    restart: unless-stopped
     volumes:
       - "${DATA:-~/docker_data}/elasticsearch:/usr/share/elasticsearch/data"
     environment:
@@ -251,4 +161,3 @@ services:
       - xpack.watcher.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
->>>>>>> origin/elastic_search_dev
