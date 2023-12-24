@@ -12,6 +12,12 @@ Install git and the latest docker (which already contains docker-compose)
    
    You will also need an editing environment. These instructions assume you have [VS Code](https://code.visualstudio.com/) installed.
       
+### See pyapi for updated instructions
+
+To run everything see the newer instructions here-
+
+[pyapi/RUNEVERYTHING](https://github.com/classtranscribe/pyapi/blob/staging/RUNEVERYTHING.md)
+
 ### Clone the ClassTranscribe Repository
 
 Clone the repository (with it's submodules). If using VS Code, open a shell then type
