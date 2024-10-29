@@ -49,7 +49,7 @@ services:
 
   # Allow to see all docker containers running, restart and see log files.
   portainer:
-    image: portainer/portainer:latest
+    image: portainer/portainer-ce:latest
     command:
       - --admin-password=${PORTAINER_PASSWORD:- }
       - --host=unix:///var/run/docker.sock
